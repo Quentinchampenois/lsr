@@ -5,7 +5,15 @@ fn to_kilobytes(length: f64) -> f64 {
     length / 1000 as f64
 }
 
+#[derive(Debug)]
+struct FileFound {
+    name: String,
+    weight: f64
+}
+
 fn main() {
+    let mut files_found : Vec<FileFound> = vec![];
+
     for file in fs::read_dir("./").unwrap() {
         let unwrap = file.unwrap();
         let metadata = unwrap.metadata().unwrap();
@@ -13,8 +21,23 @@ fn main() {
         let formatted = format!("{} ({})", format!("{}", unwrap.path().display()), format!("{:?} ko", to_kilobytes(file_size)));
         println!("{}", formatted.yellow());
 
-        // Sort by weight
-        // Display permissions
-        // Owner + group ?
+        files_found.push(FileFound {
+            name: format!("{}", unwrap.path().display()),
+            weight: to_kilobytes(file_size)
+        })
+    }
+
+    files_found.sort_by(|a, b| b.weight.partial_cmp(&a.weight).unwrap());
+
+    for file in files_found {
+        if file.weight <= 10.0 {
+            println!("{} ({})", file.name, format!("{} kb", file.weight).green())
+        } else if file.weight <= 1000.0 {
+            println!("{} ({})", file.name, format!("{} kb", file.weight).yellow())
+        } else if file.weight > 1000.0 {
+            println!("{} ({})", file.name, format!("{} kb", file.weight).red())
+        } else {
+            println!("{} ({})", file.name, format!("{} kb", file.weight).cyan())
+        }
     }
 }
