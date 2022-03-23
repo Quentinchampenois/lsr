@@ -2,7 +2,7 @@ use colored::Colorize;
 use std::fs;
 
 fn to_kilobytes(length: f64) -> f64 {
-    length / 1000 as f64
+    length / 1000_f64
 }
 
 #[derive(Debug)]
@@ -16,7 +16,17 @@ fn main() {
 
     for file in fs::read_dir("./").unwrap() {
         let unwrap = file.unwrap();
+
+        if unwrap.file_name() == "." || unwrap.file_name() == ".." {
+            continue;
+        }
+
         let metadata = unwrap.metadata().unwrap();
+
+        if metadata.file_type().is_dir() {
+            continue;
+        }
+
         let file_size = metadata.len() as f64;
 
         files_found.push(FileFound {
