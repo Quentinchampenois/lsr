@@ -8,22 +8,20 @@ fn to_kilobytes(length: f64) -> f64 {
 #[derive(Debug)]
 struct FileFound {
     name: String,
-    weight: f64
+    weight: f64,
 }
 
 fn main() {
-    let mut files_found : Vec<FileFound> = vec![];
+    let mut files_found: Vec<FileFound> = vec![];
 
     for file in fs::read_dir("./").unwrap() {
         let unwrap = file.unwrap();
         let metadata = unwrap.metadata().unwrap();
         let file_size = metadata.len() as f64;
-        let formatted = format!("{} ({})", format!("{}", unwrap.path().display()), format!("{:?} ko", to_kilobytes(file_size)));
-        println!("{}", formatted.yellow());
 
         files_found.push(FileFound {
             name: format!("{}", unwrap.path().display()),
-            weight: to_kilobytes(file_size)
+            weight: to_kilobytes(file_size),
         })
     }
 
