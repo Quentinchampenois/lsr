@@ -1,7 +1,9 @@
 [package]
-name = "heavy_file"
+name = "lsr"
 version = "0.1.0"
 edition = "2018"
+authors = ["quentinchampenois"]
+description = "List files and folders and display weight in a colored human readable format"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

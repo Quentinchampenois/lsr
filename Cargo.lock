@@ -25,13 +25,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "heavy_file"
-version = "0.1.0"
-dependencies = [
- "colored",
-]
-
-[[package]]
 name = "hermit-abi"
 version = "0.1.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -51,6 +44,13 @@ name = "libc"
 version = "0.2.121"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "efaa7b300f3b5fe8eb6bf21ce3895e1751d9665086af2d64b42f19701015ff4f"
+
+[[package]]
+name = "lsr"
+version = "0.1.0"
+dependencies = [
+ "colored",
+]
 
 [[package]]
 name = "winapi"
