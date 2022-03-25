@@ -8,19 +8,25 @@ fn to_kilobytes(length: f64) -> f64 {
 fn recursive_sum(path: String) -> f64 {
     let mut sum: f64 = 0.00;
 
-    for file in fs::read_dir(path).unwrap() {
-        let unwrap = file.unwrap();
+    match fs::read_dir(&path) {
+        Ok(v) => {
+            for file in v {
+                let unwrap = file.unwrap();
 
-        if unwrap.file_name() == "." || unwrap.file_name() == ".." {
-            continue;
-        }
-
-        let metadata = unwrap.metadata().unwrap();
-        if metadata.file_type().is_dir() {
-            sum += recursive_sum(format!("{}", unwrap.path().display()))
-        } else {
-            sum += metadata.len() as f64;
-        }
+                match unwrap.file_name() {
+                    // Allow to define different behaviour based on filename
+                    _ => {
+                        let metadata = unwrap.metadata().unwrap();
+                        if metadata.file_type().is_dir() {
+                            sum += recursive_sum(format!("{}", unwrap.path().display()))
+                        } else {
+                            sum += metadata.len() as f64;
+                        }
+                    }
+                }
+            }
+        },
+        Err(e) => println!("{}: {}", &path, e),
     }
 
     sum
@@ -45,7 +51,7 @@ fn main() {
         let metadata = unwrap.metadata().unwrap();
 
         #[allow(unused_assignments)]
-        let mut file_size = 0.00;
+            let mut file_size = 0.00;
 
         if metadata.file_type().is_dir() {
             file_size = recursive_sum(format!("{}", unwrap.path().display()));
