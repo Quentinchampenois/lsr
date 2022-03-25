@@ -1,5 +1,7 @@
 # LSR (ls Rust)
 
+![Continuous integration workflow](https://github.com/quentinchampenois/lsr/actions/workflows/tests.yml/badge.svg)
+
 List files of target directory and display files and directories with their current weight in a colored human readable format.
 
 ## Objectives
