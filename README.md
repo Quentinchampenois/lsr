@@ -16,7 +16,7 @@ The objectives of this project are :
 ## Getting started
 
 1. Build project `cargo build`
-2. Execute binary `./target/debug/heavy_file`
+2. Execute binary `./target/debug/lsr`
 
 Or 
 
