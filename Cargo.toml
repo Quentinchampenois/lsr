@@ -9,3 +9,4 @@ description = "List files and folders and display weight in a colored human read
 
 [dependencies]
 colored = "2.0"
+human_bytes = { version = "0.3", features = ["fast"] }

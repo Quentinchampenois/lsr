@@ -1,9 +1,6 @@
 use colored::Colorize;
 use std::fs;
-
-fn to_kilobytes(length: f64) -> f64 {
-    length / 1000_f64
-}
+use human_bytes::human_bytes;
 
 fn recursive_sum(path: String) -> f64 {
     let mut sum: f64 = 0.00;
@@ -36,6 +33,7 @@ fn recursive_sum(path: String) -> f64 {
 struct FileFound {
     name: String,
     weight: f64,
+    weight_readable: String,
 }
 
 fn main() {
@@ -58,13 +56,15 @@ fn main() {
 
             files_found.push(FileFound {
                 name: format!("{}/", unwrap.file_name().into_string().unwrap()),
-                weight: to_kilobytes(file_size),
+                weight: file_size,
+                weight_readable: human_bytes(file_size).parse().unwrap()
             })
         } else {
             file_size = metadata.len() as f64;
             files_found.push(FileFound {
                 name: unwrap.file_name().into_string().unwrap(),
-                weight: to_kilobytes(file_size),
+                weight: file_size,
+                weight_readable: human_bytes(file_size).parse().unwrap(),
             })
         }
     }
@@ -73,13 +73,13 @@ fn main() {
 
     for file in files_found {
         if file.weight <= 10.0 {
-            println!("{} ({})", file.name, format!("{}Kb", file.weight).green())
+            println!("{} ({})", file.name, file.weight_readable.to_string().green())
         } else if file.weight <= 1000.0 {
-            println!("{} ({})", file.name, format!("{}Kb", file.weight).yellow())
+            println!("{} ({})", file.name, file.weight_readable.to_string().yellow())
         } else if file.weight > 1000.0 {
-            println!("{} ({})", file.name, format!("{}Kb", file.weight).red())
+            println!("{} ({})", file.name, file.weight_readable.to_string().red())
         } else {
-            println!("{} ({})", file.name, format!("{}Kb", file.weight).cyan())
+            println!("{} ({})", file.name, file.weight_readable.to_string().cyan())
         }
     }
 }
