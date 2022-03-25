@@ -2,6 +2,25 @@ use colored::Colorize;
 use std::fs;
 use human_bytes::human_bytes;
 
+#[derive(Debug)]
+struct FileFound {
+    name: String,
+    weight: f64,
+    weight_readable: String,
+}
+
+fn print_file(file: FileFound) {
+    if file.weight <= 1000.0 {
+        println!("{} ({})", file.name, file.weight_readable.to_string().green())
+    } else if file.weight <= 10000.0 {
+        println!("{} ({})", file.name, file.weight_readable.to_string().yellow())
+    } else if file.weight > 10000.0 {
+        println!("{} ({})", file.name, file.weight_readable.to_string().red())
+    } else {
+        println!("{} ({})", file.name, file.weight_readable.to_string().cyan())
+    }
+}
+
 fn recursive_sum(path: String) -> f64 {
     let mut sum: f64 = 0.00;
 
@@ -10,30 +29,18 @@ fn recursive_sum(path: String) -> f64 {
             for file in v {
                 let unwrap = file.unwrap();
 
-                match unwrap.file_name() {
-                    // Allow to define different behaviour based on filename
-                    _ => {
-                        let metadata = unwrap.metadata().unwrap();
-                        if metadata.file_type().is_dir() {
-                            sum += recursive_sum(format!("{}", unwrap.path().display()))
-                        } else {
-                            sum += metadata.len() as f64;
-                        }
-                    }
+                let metadata = unwrap.metadata().unwrap();
+                if metadata.file_type().is_dir() {
+                    sum += recursive_sum(format!("{}", unwrap.path().display()))
+                } else {
+                    sum += metadata.len() as f64;
                 }
             }
-        },
+        }
         Err(e) => println!("{}: {}", &path, e),
     }
 
     sum
-}
-
-#[derive(Debug)]
-struct FileFound {
-    name: String,
-    weight: f64,
-    weight_readable: String,
 }
 
 fn main() {
@@ -57,7 +64,7 @@ fn main() {
             files_found.push(FileFound {
                 name: format!("{}/", unwrap.file_name().into_string().unwrap()),
                 weight: file_size,
-                weight_readable: human_bytes(file_size).parse().unwrap()
+                weight_readable: human_bytes(file_size).parse().unwrap(),
             })
         } else {
             file_size = metadata.len() as f64;
@@ -71,15 +78,5 @@ fn main() {
 
     files_found.sort_by(|a, b| b.weight.partial_cmp(&a.weight).unwrap());
 
-    for file in files_found {
-        if file.weight <= 10.0 {
-            println!("{} ({})", file.name, file.weight_readable.to_string().green())
-        } else if file.weight <= 1000.0 {
-            println!("{} ({})", file.name, file.weight_readable.to_string().yellow())
-        } else if file.weight > 1000.0 {
-            println!("{} ({})", file.name, file.weight_readable.to_string().red())
-        } else {
-            println!("{} ({})", file.name, file.weight_readable.to_string().cyan())
-        }
-    }
+    for file in files_found { print_file(file) }
 }
