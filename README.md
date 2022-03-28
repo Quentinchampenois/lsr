@@ -4,6 +4,8 @@
 
 List files of target directory and display files and directories with their current weight in a colored human readable format.
 
+![lsr](./images/lsr.png)
+
 ## Objectives
 
 The objectives of this project are :
