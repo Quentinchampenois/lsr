@@ -1,9 +1,11 @@
 use colored::Colorize;
 use std::fs;
 use human_bytes::human_bytes;
+use std::os::unix::fs::PermissionsExt;
 
 #[derive(Debug)]
 struct FileFound {
+    mode: u32,
     name: String,
     weight: f64,
     weight_readable: String,
@@ -11,13 +13,13 @@ struct FileFound {
 
 fn print_file(file: FileFound) {
     if file.weight <= 1000.0 {
-        println!("{} ({})", file.name, file.weight_readable.to_string().green())
+        println!("{} {} {}", unix_mode::to_string(file.mode), file.weight_readable.to_string().green(), file.name)
     } else if file.weight <= 10000.0 {
-        println!("{} ({})", file.name, file.weight_readable.to_string().yellow())
+        println!("{} {} {}", unix_mode::to_string(file.mode), file.weight_readable.to_string().yellow(), file.name)
     } else if file.weight > 10000.0 {
-        println!("{} ({})", file.name, file.weight_readable.to_string().red())
+        println!("{} {} {}", unix_mode::to_string(file.mode), file.weight_readable.to_string().red(), file.name)
     } else {
-        println!("{} ({})", file.name, file.weight_readable.to_string().cyan())
+        println!("{} {} {}", unix_mode::to_string(file.mode), file.weight_readable.to_string().cyan(), file.name)
     }
 }
 
@@ -62,13 +64,16 @@ fn main() {
             file_size = recursive_sum(format!("{}", unwrap.path().display()));
 
             files_found.push(FileFound {
+                mode: metadata.permissions().mode(),
                 name: format!("{}/", unwrap.file_name().into_string().unwrap()),
                 weight: file_size,
                 weight_readable: human_bytes(file_size).parse().unwrap(),
             })
         } else {
             file_size = metadata.len() as f64;
+
             files_found.push(FileFound {
+                mode: metadata.permissions().mode(),
                 name: unwrap.file_name().into_string().unwrap(),
                 weight: file_size,
                 weight_readable: human_bytes(file_size).parse().unwrap(),
