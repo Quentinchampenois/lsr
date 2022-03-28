@@ -14,6 +14,17 @@ impl FileFound {
     fn display_weight(&self) -> String {
         human_bytes(self.weight).parse().unwrap()
     }
+    fn display(self) {
+        if self.weight <= 1000.0 {
+            println!("{} {} {}", unix_mode::to_string(self.mode), self.display_weight().green(), self.name)
+        } else if self.weight <= 10000.0 {
+            println!("{} {} {}", unix_mode::to_string(self.mode), self.display_weight().yellow(), self.name)
+        } else if self.weight > 10000.0 {
+            println!("{} {} {}", unix_mode::to_string(self.mode), self.display_weight().red(), self.name)
+        } else {
+            println!("{} {} {}", unix_mode::to_string(self.mode), self.display_weight().cyan(), self.name)
+        }
+    }
 }
 
 fn recursive_sum(path: String) -> f64 {
@@ -36,18 +47,6 @@ fn recursive_sum(path: String) -> f64 {
     }
 
     sum
-}
-
-fn print_file(file: FileFound) {
-    if file.weight <= 1000.0 {
-        println!("{} {} {}", unix_mode::to_string(file.mode), file.display_weight().green(), file.name)
-    } else if file.weight <= 10000.0 {
-        println!("{} {} {}", unix_mode::to_string(file.mode), file.display_weight().yellow(), file.name)
-    } else if file.weight > 10000.0 {
-        println!("{} {} {}", unix_mode::to_string(file.mode), file.display_weight().red(), file.name)
-    } else {
-        println!("{} {} {}", unix_mode::to_string(file.mode), file.display_weight().cyan(), file.name)
-    }
 }
 
 fn main() {
@@ -86,5 +85,5 @@ fn main() {
 
     files_found.sort_by(|a, b| b.weight.partial_cmp(&a.weight).unwrap());
 
-    for file in files_found { print_file(file) }
+    for file in files_found { file.display() }
 }
