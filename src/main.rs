@@ -7,19 +7,12 @@ use std::os::unix::fs::PermissionsExt;
 struct FileFound {
     mode: u32,
     name: String,
-    weight: f64,
-    weight_readable: String,
+    weight: f64
 }
 
-fn print_file(file: FileFound) {
-    if file.weight <= 1000.0 {
-        println!("{} {} {}", unix_mode::to_string(file.mode), file.weight_readable.to_string().green(), file.name)
-    } else if file.weight <= 10000.0 {
-        println!("{} {} {}", unix_mode::to_string(file.mode), file.weight_readable.to_string().yellow(), file.name)
-    } else if file.weight > 10000.0 {
-        println!("{} {} {}", unix_mode::to_string(file.mode), file.weight_readable.to_string().red(), file.name)
-    } else {
-        println!("{} {} {}", unix_mode::to_string(file.mode), file.weight_readable.to_string().cyan(), file.name)
+impl FileFound {
+    fn display_weight(&self) -> String {
+        human_bytes(self.weight).parse().unwrap()
     }
 }
 
@@ -45,6 +38,18 @@ fn recursive_sum(path: String) -> f64 {
     sum
 }
 
+fn print_file(file: FileFound) {
+    if file.weight <= 1000.0 {
+        println!("{} {} {}", unix_mode::to_string(file.mode), file.display_weight().green(), file.name)
+    } else if file.weight <= 10000.0 {
+        println!("{} {} {}", unix_mode::to_string(file.mode), file.display_weight().yellow(), file.name)
+    } else if file.weight > 10000.0 {
+        println!("{} {} {}", unix_mode::to_string(file.mode), file.display_weight().red(), file.name)
+    } else {
+        println!("{} {} {}", unix_mode::to_string(file.mode), file.display_weight().cyan(), file.name)
+    }
+}
+
 fn main() {
     let mut files_found: Vec<FileFound> = vec![];
 
@@ -67,7 +72,6 @@ fn main() {
                 mode: metadata.permissions().mode(),
                 name: format!("{}/", unwrap.file_name().into_string().unwrap()),
                 weight: file_size,
-                weight_readable: human_bytes(file_size).parse().unwrap(),
             })
         } else {
             file_size = metadata.len() as f64;
@@ -76,7 +80,6 @@ fn main() {
                 mode: metadata.permissions().mode(),
                 name: unwrap.file_name().into_string().unwrap(),
                 weight: file_size,
-                weight_readable: human_bytes(file_size).parse().unwrap(),
             })
         }
     }
