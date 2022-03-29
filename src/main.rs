@@ -2,6 +2,7 @@ use colored::Colorize;
 use std::fs;
 use human_bytes::human_bytes;
 use std::os::unix::fs::PermissionsExt;
+use std::env;
 
 #[derive(Debug)]
 struct FileFound {
@@ -50,9 +51,20 @@ fn recursive_sum(path: String) -> f64 {
 }
 
 fn main() {
+    let args: Vec<String> = env::args().collect();
+    let target_path : &str;
+    match args.len() {
+        2 => {
+            target_path = &args[1];
+        }
+        _ => {
+            target_path = "."
+        }
+    }
+
     let mut files_found: Vec<FileFound> = vec![];
 
-    for file in fs::read_dir("./").unwrap() {
+    for file in fs::read_dir(target_path).unwrap() {
         let unwrap = file.unwrap();
 
         if unwrap.file_name() == "." || unwrap.file_name() == ".." {
