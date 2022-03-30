@@ -50,18 +50,20 @@ fn recursive_sum(path: String) -> f64 {
     sum
 }
 
-fn main() {
-    let args: Vec<String> = env::args().collect();
-    let target_path : &str;
+fn target_directory(args: &[String]) -> &str {
     match args.len() {
         2 => {
-            target_path = &args[1];
+            &args[1]
         }
         _ => {
-            target_path = "."
+            "."
         }
     }
+}
 
+fn main() {
+    let args : Vec<String> = env::args().collect();
+    let target_path : &str = target_directory(&args);
     let mut files_found: Vec<FileFound> = vec![];
 
     for file in fs::read_dir(target_path).unwrap() {
