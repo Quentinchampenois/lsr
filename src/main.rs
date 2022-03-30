@@ -3,6 +3,7 @@ use std::fs;
 use human_bytes::human_bytes;
 use std::os::unix::fs::PermissionsExt;
 use std::env;
+use std::fmt::Debug;
 
 #[derive(Debug)]
 struct FileFound {
@@ -66,7 +67,15 @@ fn main() {
     let target_path : &str = target_directory(&args);
     let mut files: Vec<FileFound> = vec![];
 
-    for file in fs::read_dir(target_path).unwrap() {
+    let target_dir = match fs::read_dir(target_path) {
+      Ok(file) => file,
+        Err(e) => {
+            println!("Unexpected error : {:?}", e);
+            std::process::exit(1);
+        }
+    };
+
+    for file in target_dir {
         let unwrap = file.unwrap();
 
         if unwrap.file_name() == "." || unwrap.file_name() == ".." {
@@ -99,4 +108,5 @@ fn main() {
     files.sort_by(|a, b| b.weight.partial_cmp(&a.weight).unwrap());
 
     for file in files { file.display() }
+    std::process::exit(0);
 }
