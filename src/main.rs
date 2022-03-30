@@ -75,8 +75,7 @@ fn main() {
 
         let metadata = unwrap.metadata().unwrap();
 
-        #[allow(unused_assignments)]
-            let mut file_size = 0.00;
+        let file_size: f64;
 
         if metadata.file_type().is_dir() {
             file_size = recursive_sum(format!("{}", unwrap.path().display()));
