@@ -9,7 +9,7 @@ use std::fmt::Debug;
 struct FileFound {
     mode: u32,
     name: String,
-    weight: f64
+    weight: f64,
 }
 
 impl FileFound {
@@ -63,12 +63,12 @@ fn target_directory(args: &[String]) -> &str {
 }
 
 fn main() {
-    let args : Vec<String> = env::args().collect();
-    let target_path : &str = target_directory(&args);
+    let args: Vec<String> = env::args().collect();
+    let target_path: &str = target_directory(&args);
     let mut files: Vec<FileFound> = vec![];
 
     let target_dir = match fs::read_dir(target_path) {
-      Ok(file) => file,
+        Ok(file) => file,
         Err(e) => {
             println!("Unexpected error : {:?}", e);
             std::process::exit(1);
@@ -85,24 +85,21 @@ fn main() {
         let metadata = unwrap.metadata().unwrap();
 
         let file_size: f64;
+        let file_name: String;
 
         if metadata.file_type().is_dir() {
             file_size = recursive_sum(format!("{}", unwrap.path().display()));
-
-            files.push(FileFound {
-                mode: metadata.permissions().mode(),
-                name: format!("{}/", unwrap.file_name().into_string().unwrap()),
-                weight: file_size,
-            })
+            file_name = format!("{}/", unwrap.file_name().into_string().unwrap());
         } else {
             file_size = metadata.len() as f64;
-
-            files.push(FileFound {
-                mode: metadata.permissions().mode(),
-                name: unwrap.file_name().into_string().unwrap(),
-                weight: file_size,
-            })
+            file_name = unwrap.file_name().into_string().unwrap();
         }
+
+        files.push(FileFound {
+            mode: metadata.permissions().mode(),
+            name: file_name,
+            weight: file_size,
+        })
     }
 
     files.sort_by(|a, b| b.weight.partial_cmp(&a.weight).unwrap());
