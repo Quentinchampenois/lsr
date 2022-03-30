@@ -64,7 +64,7 @@ fn target_directory(args: &[String]) -> &str {
 fn main() {
     let args : Vec<String> = env::args().collect();
     let target_path : &str = target_directory(&args);
-    let mut files_found: Vec<FileFound> = vec![];
+    let mut files: Vec<FileFound> = vec![];
 
     for file in fs::read_dir(target_path).unwrap() {
         let unwrap = file.unwrap();
@@ -80,7 +80,7 @@ fn main() {
         if metadata.file_type().is_dir() {
             file_size = recursive_sum(format!("{}", unwrap.path().display()));
 
-            files_found.push(FileFound {
+            files.push(FileFound {
                 mode: metadata.permissions().mode(),
                 name: format!("{}/", unwrap.file_name().into_string().unwrap()),
                 weight: file_size,
@@ -88,7 +88,7 @@ fn main() {
         } else {
             file_size = metadata.len() as f64;
 
-            files_found.push(FileFound {
+            files.push(FileFound {
                 mode: metadata.permissions().mode(),
                 name: unwrap.file_name().into_string().unwrap(),
                 weight: file_size,
@@ -96,7 +96,7 @@ fn main() {
         }
     }
 
-    files_found.sort_by(|a, b| b.weight.partial_cmp(&a.weight).unwrap());
+    files.sort_by(|a, b| b.weight.partial_cmp(&a.weight).unwrap());
 
-    for file in files_found { file.display() }
+    for file in files { file.display() }
 }
